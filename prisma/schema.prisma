@@ -9,12 +9,17 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+// prisma/schema.prisma
+
 model Client {
   id              String    @id @default(cuid())
   cin             String    @unique
   firstName       String
   lastName        String
-  email           String?
+  
+  email           String?   @unique   // Ensure this has @unique
+  password        String?             // NEW: Added for public authentication
+  
   phone           String
   address         String?
   city            String?
