@@ -1,23 +1,68 @@
-// src/app/api/client/vehicles/route.ts
+// src/app/api/vehicles/route.ts
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-export const dynamic = 'force-dynamic';
-
+// 1. GET: Fetch all vehicles for the Admin Panel
 export async function GET() {
   try {
-    // We remove the 'select' block to temporarily bypass the naming errors.
-    // This will fetch all fields available in your vehicle model.
     const vehicles = await prisma.vehicle.findMany({
-      // orderBy: { createdAt: 'desc' } // Optional: order by newest
+      include: {
+        // Corrected: Now matches the exact names in your schema.prisma
+        damages: {
+          orderBy: {
+            date: "desc",
+          },
+        },
+        reservations: true,
+        rentals: true,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
     });
 
     return NextResponse.json(vehicles, { status: 200 });
   } catch (error) {
-    console.error("Public vehicles fetch error:", error);
-    return NextResponse.json(
-      { error: "Failed to load vehicles" }, 
-      { status: 500 }
-    );
+    console.error("Error fetching admin vehicles:", error);
+    return NextResponse.json({ error: "Failed to fetch vehicles" }, { status: 500 });
+  }
+}
+
+// 2. POST: Create a new vehicle from the Admin Panel
+export async function POST(req: Request) {
+  try {
+    const body = await req.json();
+    const { 
+      make, 
+      model, 
+      registration, 
+      year, 
+      dailyRate, 
+      mileage, 
+      fuelType, 
+      transmission, 
+      imageUrl, 
+      status 
+    } = body;
+
+    const newVehicle = await prisma.vehicle.create({
+      data: {
+        make,
+        model,
+        registration,
+        year: Number(year),
+        dailyRate: Number(dailyRate),
+        mileage: mileage ? Number(mileage) : null,
+        fuelType,
+        transmission,
+        imageUrl,
+        status: status || "AVAILABLE",
+      },
+    });
+
+    return NextResponse.json(newVehicle, { status: 201 });
+  } catch (error) {
+    console.error("Error creating vehicle:", error);
+    return NextResponse.json({ error: "Failed to create vehicle" }, { status: 500 });
   }
 }

@@ -29,7 +29,7 @@ export default function StorefrontHomePage() {
   useEffect(() => {
     const fetchVehicles = async () => {
       try {
-        const res = await fetch("/api/client/vehicles");
+        const res = await fetch("/api/clients/vehicles");
         if (!res.ok) throw new Error("Failed to load vehicles");
         const data = await res.json();
         setVehicles(data);

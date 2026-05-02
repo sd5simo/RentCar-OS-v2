@@ -25,7 +25,7 @@ export default function ClientLoginPage() {
     setError("");
 
     try {
-      const res = await fetch("/api/client/auth/login", {
+      const res = await fetch("/api/clients/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),

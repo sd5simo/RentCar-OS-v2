@@ -29,7 +29,7 @@ export default function ClientRegisterPage() {
     setError("");
 
     try {
-      const res = await fetch("/api/client/auth/register", {
+      const res = await fetch("/api/clients/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
